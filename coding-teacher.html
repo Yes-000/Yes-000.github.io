@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>코딩 선생님 🎓</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    #header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: #fff;
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    #header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    #header h1 span { color: #e94560; }
+    #header p {
+      margin-top: 8px;
+      font-size: 1rem;
+      color: #aaa;
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      overflow: hidden;
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+    .sidebar-title {
+      background: #0f3460;
+      color: #fff;
+      padding: 16px 20px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .lesson-list { list-style: none; }
+    .lesson-list li {
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .lesson-list li:last-child { border-bottom: none; }
+    .lesson-btn {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      padding: 14px 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #444;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .lesson-btn:hover { background: #f0f4f8; color: #0f3460; }
+    .lesson-btn.active {
+      background: #e8f0fe;
+      color: #0f3460;
+      font-weight: 700;
+      border-left: 4px solid #e94560;
+    }
+    .lesson-btn .badge {
+      background: #e94560;
+      color: #fff;
+      font-size: 0.7rem;
+      border-radius: 10px;
+      padding: 2px 8px;
+      margin-left: auto;
+    }
+
+    /* Main content */
+    .main { display: flex; flex-direction: column; gap: 24px; }
+
+    /* Chat section */
+    .chat-section {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .chat-header {
+      background: linear-gradient(135deg, #e94560, #c23152);
+      color: #fff;
+      padding: 16px 24px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .chat-messages {
+      height: 320px;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #fafafa;
+    }
+    .msg {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .msg.teacher {
+      background: linear-gradient(135deg, #0f3460, #16213e);
+      color: #fff;
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+    }
+    .msg.student {
+      background: #e8f0fe;
+      color: #333;
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+    }
+    .msg .sender {
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      opacity: 0.75;
+    }
+    .chat-input-area {
+      padding: 16px 20px;
+      display: flex;
+      gap: 10px;
+      border-top: 1px solid #f0f0f0;
+    }
+    .chat-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 24px;
+      font-size: 0.95rem;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .chat-input:focus { border-color: #0f3460; }
+    .chat-send {
+      background: linear-gradient(135deg, #e94560, #c23152);
+      color: #fff;
+      border: none;
+      border-radius: 24px;
+      padding: 12px 22px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .chat-send:hover { opacity: 0.85; }
+
+    /* Lesson content */
+    .lesson-content {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      padding: 28px;
+    }
+    .lesson-content h2 {
+      font-size: 1.5rem;
+      color: #0f3460;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e8f0fe;
+    }
+    .lesson-content p {
+      color: #555;
+      line-height: 1.8;
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+    }
+    .lesson-content h3 {
+      color: #e94560;
+      font-size: 1.05rem;
+      margin: 20px 0 8px;
+    }
+    .concept-list { margin: 10px 0 18px 20px; list-style: disc; }
+    .concept-list li {
+      color: #555;
+      margin-bottom: 6px;
+      font-size: 0.93rem;
+      line-height: 1.7;
+    }
+
+    /* Code editor */
+    .editor-section {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .editor-header {
+      background: #1e293b;
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .editor-header span {
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .editor-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .editor-dots span {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ff5f57; }
+    .dot-yellow { background: #febc2e; }
+    .dot-green { background: #28c840; }
+    .editor-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .code-area {
+      background: #1e293b;
+      position: relative;
+    }
+    .code-label {
+      background: #334155;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    textarea.code-input {
+      width: 100%;
+      height: 260px;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: none;
+      outline: none;
+      padding: 16px;
+      font-family: 'Courier New', Consolas, monospace;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      resize: none;
+      tab-size: 2;
+    }
+    .preview-area {
+      border-left: 2px solid #334155;
+    }
+    .preview-label {
+      background: #f8fafc;
+      color: #64748b;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    iframe#preview {
+      width: 100%;
+      height: 260px;
+      border: none;
+      background: #fff;
+    }
+    .editor-actions {
+      background: #f8fafc;
+      padding: 12px 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      border-top: 1px solid #e2e8f0;
+    }
+    .run-btn {
+      background: #28c840;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 22px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .run-btn:hover { opacity: 0.85; }
+    .reset-btn {
+      background: #94a3b8;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .reset-btn:hover { opacity: 0.8; }
+    .editor-hint {
+      margin-left: auto;
+      font-size: 0.82rem;
+      color: #94a3b8;
+    }
+
+    /* Quiz section */
+    .quiz-section {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      padding: 28px;
+    }
+    .quiz-section h2 {
+      font-size: 1.4rem;
+      color: #0f3460;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .quiz-item {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 2px solid transparent;
+      transition: border-color 0.3s;
+    }
+    .quiz-item.correct { border-color: #28c840; background: #f0fff4; }
+    .quiz-item.wrong { border-color: #e94560; background: #fff5f5; }
+    .quiz-q {
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 14px;
+      font-size: 0.97rem;
+      line-height: 1.6;
+    }
+    .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+    .quiz-option {
+      background: #fff;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #444;
+      text-align: left;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .quiz-option:hover:not(:disabled) { border-color: #0f3460; color: #0f3460; }
+    .quiz-option.selected-correct {
+      background: #e8fff0;
+      border-color: #28c840;
+      color: #1a7a32;
+      font-weight: 700;
+    }
+    .quiz-option.selected-wrong {
+      background: #fff0f3;
+      border-color: #e94560;
+      color: #c23152;
+      font-weight: 700;
+    }
+    .quiz-option.show-correct {
+      background: #e8fff0;
+      border-color: #28c840;
+      color: #1a7a32;
+    }
+    .quiz-feedback {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 8px;
+      display: none;
+    }
+    .quiz-feedback.correct { background: #e8fff0; color: #1a7a32; display: block; }
+    .quiz-feedback.wrong { background: #fff0f3; color: #c23152; display: block; }
+
+    /* Progress bar */
+    .progress-bar-container {
+      background: #e2e8f0;
+      border-radius: 99px;
+      height: 8px;
+      margin: 10px 0 20px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #e94560, #0f3460);
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    /* Tip box */
+    .tip-box {
+      background: linear-gradient(135deg, #e8f0fe, #d0e2ff);
+      border-left: 4px solid #0f3460;
+      border-radius: 0 12px 12px 0;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 0.9rem;
+      color: #1e293b;
+      line-height: 1.7;
+    }
+    .tip-box strong { color: #0f3460; }
+
+    code.inline {
+      background: #f1f5f9;
+      color: #e94560;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.88em;
+    }
+
+    @media (max-width: 900px) {
+      .container { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .editor-grid { grid-template-columns: 1fr; }
+      iframe#preview { height: 200px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <h1>🎓 코딩 <span>선생님</span></h1>
+  <p>함께 배우는 재미있는 코딩 수업! 질문하고, 실습하고, 성장하세요.</p>
+</div>
+
+<div class="container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-title">📚 강의 목록</div>
+    <ul class="lesson-list" id="lessonList">
+      <li><button class="lesson-btn active" onclick="loadLesson(0)">🌐 HTML 기초 <span class="badge">입문</span></button></li>
+      <li><button class="lesson-btn" onclick="loadLesson(1)">🎨 CSS 스타일링 <span class="badge">입문</span></button></li>
+      <li><button class="lesson-btn" onclick="loadLesson(2)">⚡ JavaScript 기초 <span class="badge">초급</span></button></li>
+      <li><button class="lesson-btn" onclick="loadLesson(3)">🔄 JavaScript 함수 <span class="badge">초급</span></button></li>
+      <li><button class="lesson-btn" onclick="loadLesson(4)">📦 배열과 반복문 <span class="badge">중급</span></button></li>
+      <li><button class="lesson-btn" onclick="loadLesson(5)">🏗️ DOM 조작 <span class="badge">중급</span></button></li>
+    </ul>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Chat with teacher -->
+    <section class="chat-section">
+      <div class="chat-header">👩‍🏫 선생님께 질문하기</div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg teacher">
+          <div class="sender">🎓 코딩 선생님</div>
+          안녕하세요! 저는 여러분의 코딩 선생님이에요 😊<br>
+          궁금한 점이 있으면 언제든지 질문해 주세요!<br>
+          예시: "변수가 뭐예요?", "HTML이란?", "함수 설명해줘"
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" class="chat-input" id="chatInput"
+          placeholder="선생님께 질문해 보세요... (예: 변수가 뭐예요?)"
+          onkeydown="if(event.key==='Enter') sendMessage()" />
+        <button class="chat-send" onclick="sendMessage()">전송 ✉️</button>
+      </div>
+    </section>
+
+    <!-- Lesson content -->
+    <section class="lesson-content" id="lessonContent">
+      <!-- Filled by JS -->
+    </section>
+
+    <!-- Code Editor -->
+    <section class="editor-section">
+      <div class="editor-header">
+        <div class="editor-dots">
+          <span class="dot-red"></span>
+          <span class="dot-yellow"></span>
+          <span class="dot-green"></span>
+        </div>
+        <span>💻 코드 실습 에디터</span>
+      </div>
+      <div class="editor-grid">
+        <div class="code-area">
+          <div class="code-label">코드 편집</div>
+          <textarea class="code-input" id="codeInput" spellcheck="false"
+            placeholder="여기에 코드를 작성하세요..."></textarea>
+        </div>
+        <div class="preview-area">
+          <div class="preview-label">미리보기 결과</div>
+          <iframe id="preview" sandbox="allow-scripts allow-forms"></iframe>
+        </div>
+      </div>
+      <div class="editor-actions">
+        <button class="run-btn" onclick="runCode()">▶ 실행하기</button>
+        <button class="reset-btn" onclick="resetCode()">↺ 초기화</button>
+        <span class="editor-hint">💡 Ctrl+Enter로 빠르게 실행!</span>
+      </div>
+    </section>
+
+    <!-- Quiz -->
+    <section class="quiz-section">
+      <h2>📝 <span id="quizTitle">퀴즈</span></h2>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+      </div>
+      <div id="quizContainer"><!-- Filled by JS --></div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// Lesson data
+// ──────────────────────────────────────────────
+const lessons = [
+  {
+    title: "🌐 HTML 기초",
+    content: `
+      <h2>🌐 HTML이란 무엇인가요?</h2>
+      <p>HTML(HyperText Markup Language)은 웹페이지의 <strong>뼈대</strong>를 만드는 언어입니다. 마치 건물의 철골 구조처럼, HTML은 웹페이지의 구조와 내용을 정의합니다.</p>
+      <h3>📌 핵심 개념</h3>
+      <ul class="concept-list">
+        <li><strong>태그(Tag)</strong>: <code class="inline">&lt;태그이름&gt;</code> 형태로 사용합니다.</li>
+        <li><strong>요소(Element)</strong>: 여는 태그 + 내용 + 닫는 태그로 구성됩니다.</li>
+        <li><strong>속성(Attribute)</strong>: 태그에 추가 정보를 제공합니다. (예: <code class="inline">src</code>, <code class="inline">href</code>)</li>
+      </ul>
+      <h3>📝 자주 쓰는 태그</h3>
+      <ul class="concept-list">
+        <li><code class="inline">&lt;h1&gt;~&lt;h6&gt;</code>: 제목 (숫자가 작을수록 큰 제목)</li>
+        <li><code class="inline">&lt;p&gt;</code>: 문단(단락)</li>
+        <li><code class="inline">&lt;a href="..."&gt;</code>: 링크</li>
+        <li><code class="inline">&lt;img src="..."&gt;</code>: 이미지</li>
+        <li><code class="inline">&lt;div&gt;</code>: 구역을 나누는 블록 컨테이너</li>
+        <li><code class="inline">&lt;ul&gt;</code>, <code class="inline">&lt;li&gt;</code>: 목록</li>
+      </ul>
+      <div class="tip-box">
+        💡 <strong>팁:</strong> HTML은 대소문자를 구분하지 않지만, 소문자로 쓰는 것이 권장됩니다.
+        모든 여는 태그에는 닫는 태그가 필요합니다! (예외: <code class="inline">&lt;br&gt;</code>, <code class="inline">&lt;img&gt;</code> 등)
+      </div>
+    `,
+    code: `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>나의 첫 HTML 페이지</title>
+</head>
+<body>
+  <h1>안녕하세요! 👋</h1>
+  <p>이것은 <strong>나의 첫 HTML 페이지</strong>입니다.</p>
+  <h2>좋아하는 음식 목록</h2>
+  <ul>
+    <li>🍕 피자</li>
+    <li>🍣 초밥</li>
+    <li>🍜 라면</li>
+  </ul>
+  <p>
+    <a href="https://github.com">GitHub 방문하기</a>
+  </p>
+</body>
+</html>`,
+    quizTitle: "HTML 기초 퀴즈",
+    quizzes: [
+      {
+        q: "HTML에서 가장 큰 제목 태그는 무엇인가요?",
+        options: ["<h6>", "<title>", "<h1>", "<big>"],
+        answer: 2,
+        explanation: "정답! <h1>이 가장 큰 제목 태그입니다. h1부터 h6까지 있으며 숫자가 클수록 작아집니다."
+      },
+      {
+        q: "링크를 만들 때 사용하는 태그는?",
+        options: ["<link>", "<a>", "<url>", "<href>"],
+        answer: 1,
+        explanation: "정답! <a href='주소'>텍스트</a> 형태로 사용합니다."
+      },
+      {
+        q: "HTML에서 이미지를 삽입하는 태그는?",
+        options: ["<picture>", "<photo>", "<image>", "<img>"],
+        answer: 3,
+        explanation: "정답! <img src='이미지경로' alt='설명'> 형태로 사용합니다."
+      }
+    ]
+  },
+  {
+    title: "🎨 CSS 스타일링",
+    content: `
+      <h2>🎨 CSS란 무엇인가요?</h2>
+      <p>CSS(Cascading Style Sheets)는 HTML로 만든 구조에 <strong>디자인과 스타일</strong>을 입히는 언어입니다. 색깔, 크기, 배치 등을 지정할 수 있어요.</p>
+      <h3>📌 CSS 기본 문법</h3>
+      <ul class="concept-list">
+        <li><strong>선택자(Selector)</strong>: 스타일을 적용할 HTML 요소를 지정합니다.</li>
+        <li><strong>속성(Property)</strong>: 바꾸려는 스타일의 종류입니다. (예: <code class="inline">color</code>)</li>
+        <li><strong>값(Value)</strong>: 속성에 적용할 값입니다. (예: <code class="inline">red</code>)</li>
+      </ul>
+      <h3>🖌️ 자주 쓰는 CSS 속성</h3>
+      <ul class="concept-list">
+        <li><code class="inline">color</code>: 글자 색상</li>
+        <li><code class="inline">background-color</code>: 배경 색상</li>
+        <li><code class="inline">font-size</code>: 글자 크기</li>
+        <li><code class="inline">margin</code>: 요소 바깥 여백</li>
+        <li><code class="inline">padding</code>: 요소 안쪽 여백</li>
+        <li><code class="inline">border-radius</code>: 모서리 둥글기</li>
+      </ul>
+      <div class="tip-box">
+        💡 <strong>선택자 종류:</strong><br>
+        • <code class="inline">p { }</code> — 태그 선택자<br>
+        • <code class="inline">.클래스명 { }</code> — 클래스 선택자<br>
+        • <code class="inline">#아이디 { }</code> — ID 선택자
+      </div>
+    `,
+    code: `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>CSS 스타일 연습</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f4f8;
+      text-align: center;
+      padding: 30px;
+    }
+    h1 {
+      color: #e94560;
+      font-size: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 400px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .btn {
+      background: #0f3460;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #e94560;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 CSS 마법!</h1>
+  <div class="card">
+    <p>CSS로 이렇게 예쁘게 꾸밀 수 있어요!</p>
+    <button class="btn">클릭해보세요</button>
+  </div>
+</body>
+</html>`,
+    quizTitle: "CSS 스타일링 퀴즈",
+    quizzes: [
+      {
+        q: "CSS에서 글자 색상을 바꾸는 속성은?",
+        options: ["font-color", "text-color", "color", "foreground"],
+        answer: 2,
+        explanation: "정답! CSS에서 글자 색상은 color 속성으로 지정합니다."
+      },
+      {
+        q: "CSS 클래스 선택자는 어떻게 쓰나요?",
+        options: ["#클래스명", ".클래스명", "*클래스명", "@클래스명"],
+        answer: 1,
+        explanation: "정답! .클래스명 으로 클래스를 선택합니다. #은 ID 선택자입니다."
+      },
+      {
+        q: "요소 안쪽 여백을 주는 CSS 속성은?",
+        options: ["margin", "spacing", "padding", "gap"],
+        answer: 2,
+        explanation: "정답! padding은 요소 안쪽 여백, margin은 요소 바깥 여백입니다."
+      }
+    ]
+  },
+  {
+    title: "⚡ JavaScript 기초",
+    content: `
+      <h2>⚡ JavaScript란 무엇인가요?</h2>
+      <p>JavaScript는 웹페이지를 <strong>살아있게 만드는</strong> 프로그래밍 언어입니다. 버튼 클릭, 데이터 처리, 애니메이션 등 모든 동적인 기능을 담당합니다.</p>
+      <h3>📌 기본 개념</h3>
+      <ul class="concept-list">
+        <li><strong>변수(Variable)</strong>: 데이터를 저장하는 공간. <code class="inline">let</code>, <code class="inline">const</code>로 선언합니다.</li>
+        <li><strong>자료형</strong>: 숫자(Number), 문자열(String), 불리언(Boolean) 등</li>
+        <li><strong>출력</strong>: <code class="inline">console.log()</code> 또는 <code class="inline">alert()</code></li>
+        <li><strong>조건문</strong>: <code class="inline">if / else</code>로 조건에 따라 다른 코드를 실행</li>
+      </ul>
+      <div class="tip-box">
+        💡 <strong>var vs let vs const:</strong><br>
+        • <code class="inline">var</code>: 옛날 방식 (지금은 잘 안 씁니다)<br>
+        • <code class="inline">let</code>: 값을 바꿀 수 있는 변수<br>
+        • <code class="inline">const</code>: 한 번 정하면 바꿀 수 없는 상수
+      </div>
+    `,
+    code: `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScript 기초</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
+    #result { background: white; padding: 16px; border-radius: 8px;
+              margin-top: 10px; font-size: 1.1rem; border: 2px solid #0f3460; }
+    button { background: #e94560; color: white; border: none;
+             padding: 10px 20px; border-radius: 8px; cursor: pointer;
+             font-size: 1rem; margin: 5px; }
+  </style>
+</head>
+<body>
+  <h2>⚡ JavaScript 체험하기</h2>
+  <button onclick="greet()">인사하기</button>
+  <button onclick="calculate()">계산하기</button>
+  <button onclick="checkAge()">나이 확인</button>
+  <div id="result">버튼을 클릭해보세요!</div>
+  <script>
+    function greet() {
+      const name = "코딩 학생";
+      const msg = "안녕하세요, " + name + "님! 반갑습니다 😊";
+      document.getElementById('result').innerText = msg;
+    }
+    function calculate() {
+      const a = 15, b = 7;
+      const result = "덧셈: " + (a + b) + "\\n곱셈: " + (a * b);
+      document.getElementById('result').innerText = result;
+    }
+    function checkAge() {
+      const age = 20;
+      let msg = "나이: " + age + "살\\n";
+      if (age >= 18) {
+        msg += "성인입니다 ✅";
+      } else {
+        msg += "미성년자입니다 🔞";
+      }
+      document.getElementById('result').innerText = msg;
+    }
+  </script>
+</body>
+</html>`,
+    quizTitle: "JavaScript 기초 퀴즈",
+    quizzes: [
+      {
+        q: "JavaScript에서 변수를 선언할 때 값이 변하지 않으면 어느 키워드를 사용하나요?",
+        options: ["var", "let", "const", "fixed"],
+        answer: 2,
+        explanation: "정답! const는 한 번 할당하면 값을 변경할 수 없는 상수를 선언합니다."
+      },
+      {
+        q: "콘솔에 메시지를 출력하는 코드는?",
+        options: ["print('안녕')", "echo('안녕')", "console.log('안녕')", "output('안녕')"],
+        answer: 2,
+        explanation: "정답! console.log()는 브라우저 콘솔에 메시지를 출력합니다."
+      },
+      {
+        q: "JavaScript에서 문자열을 나타내는 방법이 아닌 것은?",
+        options: ["'안녕하세요'", "\"안녕하세요\"", "`안녕하세요`", "#안녕하세요#"],
+        answer: 3,
+        explanation: "정답! #는 문자열 표기법이 아닙니다. 작은따옴표, 큰따옴표, 백틱(`)을 사용합니다."
+      }
+    ]
+  },
+  {
+    title: "🔄 JavaScript 함수",
+    content: `
+      <h2>🔄 함수(Function)란?</h2>
+      <p>함수는 <strong>특정 작업을 수행하는 코드 묶음</strong>입니다. 반복적인 코드를 함수로 만들면 필요할 때마다 호출해서 사용할 수 있습니다.</p>
+      <h3>📌 함수의 종류</h3>
+      <ul class="concept-list">
+        <li><strong>함수 선언식</strong>: <code class="inline">function 이름() { }</code></li>
+        <li><strong>함수 표현식</strong>: <code class="inline">const 이름 = function() { }</code></li>
+        <li><strong>화살표 함수</strong>: <code class="inline">const 이름 = () => { }</code></li>
+      </ul>
+      <h3>📌 매개변수와 반환값</h3>
+      <ul class="concept-list">
+        <li><strong>매개변수(Parameter)</strong>: 함수가 입력받는 값</li>
+        <li><strong>반환값(Return)</strong>: 함수가 처리 후 돌려주는 값 (<code class="inline">return</code> 사용)</li>
+      </ul>
+      <div class="tip-box">
+        💡 <strong>함수 작성 팁:</strong><br>
+        함수 이름은 그 함수가 하는 일을 잘 나타내도록 지으세요.<br>
+        예: <code class="inline">calculateTotal()</code>, <code class="inline">getUserName()</code>
+      </div>
+    `,
+    code: `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScript 함수</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f0f4f8; }
+    .box { background: white; border-radius: 12px; padding: 20px; margin: 10px 0;
+           box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    input { padding: 8px 12px; border: 2px solid #ddd; border-radius: 8px;
+            font-size: 1rem; width: 120px; }
+    button { background: #0f3460; color: white; border: none; padding: 8px 16px;
+             border-radius: 8px; cursor: pointer; margin-left: 8px; }
+    .result { color: #e94560; font-weight: bold; font-size: 1.1rem; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h3>🧮 덧셈 계산기</h3>
+    <input type="number" id="num1" placeholder="숫자 1" value="5">
+    <input type="number" id="num2" placeholder="숫자 2" value="3">
+    <button onclick="addNumbers()">더하기</button>
+    <div class="result" id="addResult"></div>
+  </div>
+  <div class="box">
+    <h3>🌡️ 온도 변환기</h3>
+    <input type="number" id="celsius" placeholder="섭씨 온도" value="100">
+    <button onclick="convertTemp()">화씨 변환</button>
+    <div class="result" id="tempResult"></div>
+  </div>
+  <div class="box">
+    <h3>🎂 나이 계산기</h3>
+    <input type="number" id="birthYear" placeholder="태어난 해" value="2000">
+    <button onclick="calcAge()">나이 계산</button>
+    <div class="result" id="ageResult"></div>
+  </div>
+  <script>
+    // 함수 선언식
+    function addNumbers() {
+      const a = Number(document.getElementById('num1').value);
+      const b = Number(document.getElementById('num2').value);
+      document.getElementById('addResult').innerText = a + " + " + b + " = " + (a + b);
+    }
+    // 화살표 함수
+    const convertTemp = () => {
+      const c = Number(document.getElementById('celsius').value);
+      const f = (c * 9/5) + 32;
+      document.getElementById('tempResult').innerText = c + "°C = " + f.toFixed(1) + "°F";
+    };
+    // 매개변수와 반환값
+    function getAge(birthYear) {
+      return new Date().getFullYear() - birthYear;
+    }
+    function calcAge() {
+      const year = Number(document.getElementById('birthYear').value);
+      const age = getAge(year);
+      document.getElementById('ageResult').innerText = "만 " + age + "세입니다!";
+    }
+  </script>
+</body>
+</html>`,
+    quizTitle: "JavaScript 함수 퀴즈",
+    quizzes: [
+      {
+        q: "함수에서 결과값을 반환할 때 사용하는 키워드는?",
+        options: ["output", "result", "return", "give"],
+        answer: 2,
+        explanation: "정답! return 키워드로 함수의 결과값을 반환합니다."
+      },
+      {
+        q: "화살표 함수(Arrow Function)의 올바른 문법은?",
+        options: [
+          "function => () { }",
+          "const fn = () => { }",
+          "const fn => function() { }",
+          "fn -> () { }"
+        ],
+        answer: 1,
+        explanation: "정답! 화살표 함수는 const 이름 = () => { } 형태로 작성합니다."
+      },
+      {
+        q: "함수가 입력받는 값을 무엇이라고 하나요?",
+        options: ["반환값", "리턴값", "매개변수", "출력값"],
+        answer: 2,
+        explanation: "정답! 함수가 입력받는 값을 매개변수(Parameter)라고 합니다."
+      }
+    ]
+  },
+  {
+    title: "📦 배열과 반복문",
+    content: `
+      <h2>📦 배열(Array)과 반복문(Loop)</h2>
+      <p><strong>배열</strong>은 여러 값을 하나의 변수에 저장하는 자료구조이고, <strong>반복문</strong>은 같은 코드를 여러 번 실행할 때 사용합니다.</p>
+      <h3>📌 배열 기본</h3>
+      <ul class="concept-list">
+        <li>배열 생성: <code class="inline">const arr = [1, 2, 3]</code></li>
+        <li>요소 접근: <code class="inline">arr[0]</code> (인덱스는 0부터 시작)</li>
+        <li>길이: <code class="inline">arr.length</code></li>
+        <li>추가: <code class="inline">arr.push(값)</code></li>
+      </ul>
+      <h3>📌 반복문 종류</h3>
+      <ul class="concept-list">
+        <li><code class="inline">for (let i=0; i&lt;n; i++)</code>: 횟수가 정해진 반복</li>
+        <li><code class="inline">for...of</code>: 배열 요소를 순서대로</li>
+        <li><code class="inline">forEach()</code>: 배열의 각 요소에 함수 실행</li>
+        <li><code class="inline">map()</code>: 배열 각 요소를 변환해 새 배열 반환</li>
+      </ul>
+      <div class="tip-box">
+        💡 <code class="inline">map()</code>, <code class="inline">filter()</code>, <code class="inline">reduce()</code>를 <strong>고차 함수</strong>라고 부릅니다. 현대 JavaScript에서 매우 자주 사용됩니다!
+      </div>
+    `,
+    code: `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>배열과 반복문</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f0f4f8; }
+    .box { background: white; border-radius: 12px; padding: 16px;
+           margin: 10px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h3 { color: #0f3460; margin-bottom: 10px; }
+    .tag { display: inline-block; background: #e8f0fe; color: #0f3460;
+           padding: 4px 10px; border-radius: 20px; margin: 3px; font-size: 0.9rem; }
+    .num { font-size: 1.4rem; font-weight: bold; color: #e94560; }
+    ul { padding-left: 20px; }
+    li { margin: 4px 0; }
+  </style>
+</head>
+<body>
+  <div class="box" id="fruitsBox">
+    <h3>🍎 과일 목록</h3>
+  </div>
+  <div class="box" id="numbersBox">
+    <h3>🔢 숫자 처리</h3>
+  </div>
+  <div class="box" id="filterBox">
+    <h3>🔍 필터링</h3>
+  </div>
+  <script>
+    // 배열 생성
+    const fruits = ["사과", "바나나", "딸기", "포도", "망고"];
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    // for...of 반복문
+    const fruitsBox = document.getElementById('fruitsBox');
+    for (const fruit of fruits) {
+      const span = document.createElement('span');
+      span.className = 'tag';
+      span.innerText = fruit;
+      fruitsBox.appendChild(span);
+    }
+
+    // map() — 모든 숫자를 제곱
+    const squared = numbers.map(n => n * n);
+    const numbersBox = document.getElementById('numbersBox');
+    numbersBox.innerHTML += '<p>원본: ' + numbers.join(', ') + '</p>';
+    numbersBox.innerHTML += '<p>제곱: ' + squared.join(', ') + '</p>';
+    numbersBox.innerHTML += '<p>합계: <span class="num">' +
+      numbers.reduce((sum, n) => sum + n, 0) + '</span></p>';
+
+    // filter() — 짝수만 추출
+    const evens = numbers.filter(n => n % 2 === 0);
+    document.getElementById('filterBox').innerHTML +=
+      '<p>짝수만: <strong>' + evens.join(', ') + '</strong></p>';
+  </script>
+</body>
+</html>`,
+    quizTitle: "배열과 반복문 퀴즈",
+    quizzes: [
+      {
+        q: "JavaScript 배열에서 첫 번째 요소의 인덱스는?",
+        options: ["1", "0", "-1", "first"],
+        answer: 1,
+        explanation: "정답! 배열의 인덱스는 0부터 시작합니다. arr[0]이 첫 번째 요소입니다."
+      },
+      {
+        q: "배열에 새 요소를 추가할 때 사용하는 메서드는?",
+        options: ["add()", "append()", "push()", "insert()"],
+        answer: 2,
+        explanation: "정답! push()는 배열 끝에 새 요소를 추가합니다."
+      },
+      {
+        q: "배열의 각 요소를 변환하여 새 배열을 만드는 메서드는?",
+        options: ["filter()", "forEach()", "find()", "map()"],
+        answer: 3,
+        explanation: "정답! map()은 각 요소를 변환하여 새 배열을 반환합니다."
+      }
+    ]
+  },
+  {
+    title: "🏗️ DOM 조작",
+    content: `
+      <h2>🏗️ DOM(Document Object Model) 조작</h2>
+      <p>DOM은 HTML 문서를 JavaScript로 조작할 수 있게 해주는 <strong>인터페이스</strong>입니다. DOM을 통해 HTML 요소를 선택하고, 내용을 변경하고, 이벤트를 처리할 수 있습니다.</p>
+      <h3>📌 요소 선택</h3>
+      <ul class="concept-list">
+        <li><code class="inline">document.getElementById('id')</code>: ID로 선택</li>
+        <li><code class="inline">document.querySelector('.class')</code>: CSS 선택자로 선택</li>
+        <li><code class="inline">document.querySelectorAll('태그')</code>: 여러 요소 선택</li>
+      </ul>
+      <h3>📌 요소 변경</h3>
+      <ul class="concept-list">
+        <li><code class="inline">element.innerText</code>: 텍스트 내용 변경</li>
+        <li><code class="inline">element.innerHTML</code>: HTML 내용 변경</li>
+        <li><code class="inline">element.style.color</code>: 스타일 변경</li>
+        <li><code class="inline">element.classList.add/remove</code>: 클래스 추가/제거</li>
+      </ul>
+      <h3>📌 이벤트</h3>
+      <ul class="concept-list">
+        <li><code class="inline">element.addEventListener('click', 함수)</code>: 클릭 이벤트</li>
+        <li><code class="inline">element.addEventListener('input', 함수)</code>: 입력 이벤트</li>
+      </ul>
+      <div class="tip-box">
+        💡 DOM 조작은 React, Vue 같은 프레임워크의 기반이 됩니다. DOM을 잘 이해하면 어떤 프레임워크도 배우기 쉬워져요!
+      </div>
+    `,
+    code: `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>DOM 조작 실습</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f0f4f8; }
+    .box { background: white; border-radius: 12px; padding: 20px;
+           margin: 10px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h2 { color: #0f3460; }
+    button { background: #e94560; color: white; border: none; border-radius: 8px;
+             padding: 8px 16px; margin: 4px; cursor: pointer; font-size: 0.9rem; }
+    input { padding: 8px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
+    #colorBox { width: 100%; height: 80px; border-radius: 12px;
+                background: #e94560; transition: background 0.3s;
+                display: flex; align-items: center; justify-content: center;
+                color: white; font-weight: bold; font-size: 1.1rem; margin-top: 10px; }
+    #todoList { list-style: none; padding: 0; margin-top: 10px; }
+    #todoList li { background: #f8fafc; border-radius: 8px; padding: 8px 12px;
+                   margin: 4px 0; display: flex; justify-content: space-between; }
+    #todoList li button { background: #94a3b8; padding: 4px 10px; font-size: 0.8rem; }
+    #counter { font-size: 3rem; font-weight: bold; color: #0f3460; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>🎨 색상 변경</h2>
+    <button onclick="changeColor('red')">빨강</button>
+    <button onclick="changeColor('blue')">파랑</button>
+    <button onclick="changeColor('green')">초록</button>
+    <button onclick="changeColor('#ff9800')">오렌지</button>
+    <div id="colorBox">색상을 변경해보세요!</div>
+  </div>
+  <div class="box">
+    <h2>📝 할 일 목록</h2>
+    <input type="text" id="todoInput" placeholder="할 일을 입력하세요">
+    <button onclick="addTodo()">추가</button>
+    <ul id="todoList"></ul>
+  </div>
+  <div class="box">
+    <h2>🔢 카운터</h2>
+    <div id="counter">0</div>
+    <div style="text-align:center; margin-top: 10px;">
+      <button onclick="changeCount(-1)">-1</button>
+      <button onclick="changeCount(1)">+1</button>
+      <button onclick="resetCount()">초기화</button>
+    </div>
+  </div>
+  <script>
+    // 색상 변경
+    function changeColor(color) {
+      const box = document.getElementById('colorBox');
+      box.style.background = color;
+      box.innerText = color + " 색상!";
+    }
+    // 할 일 목록
+    function addTodo() {
+      const input = document.getElementById('todoInput');
+      const text = input.value.trim();
+      if (!text) return;
+      const li = document.createElement('li');
+      li.innerHTML = '<span>' + text + '</span>' +
+        '<button onclick="this.parentElement.remove()">삭제</button>';
+      document.getElementById('todoList').appendChild(li);
+      input.value = '';
+    }
+    document.getElementById('todoInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addTodo();
+    });
+    // 카운터
+    let count = 0;
+    function changeCount(n) {
+      count += n;
+      document.getElementById('counter').innerText = count;
+      document.getElementById('counter').style.color =
+        count > 0 ? '#28c840' : count < 0 ? '#e94560' : '#0f3460';
+    }
+    function resetCount() {
+      count = 0;
+      document.getElementById('counter').innerText = 0;
+      document.getElementById('counter').style.color = '#0f3460';
+    }
+  </script>
+</body>
+</html>`,
+    quizTitle: "DOM 조작 퀴즈",
+    quizzes: [
+      {
+        q: "ID가 'myBtn'인 요소를 JavaScript로 선택하는 올바른 코드는?",
+        options: [
+          "document.getElement('myBtn')",
+          "document.getElementById('myBtn')",
+          "document.selectId('myBtn')",
+          "document.find('#myBtn')"
+        ],
+        answer: 1,
+        explanation: "정답! getElementById()는 ID로 요소를 선택하는 메서드입니다."
+      },
+      {
+        q: "요소의 텍스트 내용을 변경할 때 사용하는 속성은?",
+        options: ["element.text", "element.value", "element.innerText", "element.content"],
+        answer: 2,
+        explanation: "정답! innerText로 요소의 텍스트 내용을 읽거나 변경할 수 있습니다."
+      },
+      {
+        q: "클릭 이벤트를 추가하는 올바른 방법은?",
+        options: [
+          "element.onClick(함수)",
+          "element.addEvent('click', 함수)",
+          "element.addEventListener('click', 함수)",
+          "element.on('click', 함수)"
+        ],
+        answer: 2,
+        explanation: "정답! addEventListener('click', 함수)로 클릭 이벤트를 등록합니다."
+      }
+    ]
+  }
+];
+
+// ──────────────────────────────────────────────
+// Chat knowledge base
+// ──────────────────────────────────────────────
+const knowledgeBase = [
+  {
+    keywords: ["html", "에이치티엠엘", "마크업"],
+    answer: "HTML(HyperText Markup Language)은 웹페이지의 구조를 만드는 언어예요! 🌐\n태그(Tag)를 사용해서 제목, 문단, 이미지, 링크 등을 표현합니다.\n예시: <h1>제목</h1>, <p>문단</p>, <a href='...'>링크</a>"
+  },
+  {
+    keywords: ["css", "스타일", "디자인", "꾸미"],
+    answer: "CSS(Cascading Style Sheets)는 HTML을 예쁘게 꾸미는 언어예요! 🎨\ncolor, font-size, background, margin 같은 속성으로 디자인을 바꿀 수 있어요.\n예: p { color: red; font-size: 16px; }"
+  },
+  {
+    keywords: ["javascript", "자바스크립트", "js"],
+    answer: "JavaScript는 웹페이지를 동적으로 만드는 프로그래밍 언어예요! ⚡\n버튼 클릭 처리, 데이터 계산, 화면 변경 등 다양한 기능을 구현합니다.\n변수, 함수, 조건문, 반복문이 기본 개념이에요!"
+  },
+  {
+    keywords: ["변수", "variable", "let", "const", "var"],
+    answer: "변수는 데이터를 저장하는 공간이에요! 📦\n• let name = '홍길동';  → 나중에 값을 바꿀 수 있어요\n• const PI = 3.14;     → 한번 정하면 바꿀 수 없어요\n변수명은 의미있게 짓는 것이 중요합니다!"
+  },
+  {
+    keywords: ["함수", "function", "메서드", "method"],
+    answer: "함수는 특정 작업을 수행하는 코드 묶음이에요! 🔄\n\nfunction greet(name) {\n  return '안녕, ' + name + '!';\n}\n\ngreet('철수'); // → '안녕, 철수!'\n\n함수를 사용하면 코드 중복을 줄일 수 있어요!"
+  },
+  {
+    keywords: ["배열", "array", "리스트", "list"],
+    answer: "배열은 여러 값을 하나의 변수에 담는 자료구조예요! 📦\n\nconst fruits = ['사과', '바나나', '딸기'];\nconsole.log(fruits[0]); // → '사과' (0번 인덱스)\nfruits.push('포도');     // 추가\n\n배열의 인덱스는 0부터 시작한다는 걸 꼭 기억하세요!"
+  },
+  {
+    keywords: ["반복문", "for", "loop", "while", "foreach"],
+    answer: "반복문은 같은 코드를 여러 번 실행할 때 써요! 🔄\n\n// for문\nfor (let i = 0; i < 5; i++) {\n  console.log(i); // 0, 1, 2, 3, 4\n}\n\n// 배열 반복\nfruits.forEach(f => console.log(f));"
+  },
+  {
+    keywords: ["조건문", "if", "else", "switch"],
+    answer: "조건문은 조건에 따라 다른 코드를 실행해요! 🔀\n\nconst age = 20;\nif (age >= 18) {\n  console.log('성인입니다');\n} else {\n  console.log('미성년자입니다');\n}\n\n조건이 참이면 if 블록, 거짓이면 else 블록이 실행돼요!"
+  },
+  {
+    keywords: ["dom", "document", "요소 선택", "선택"],
+    answer: "DOM은 JavaScript로 HTML 요소를 조작할 수 있게 해줘요! 🏗️\n\n// ID로 선택\nconst el = document.getElementById('myId');\nel.innerText = '새 텍스트'; // 내용 변경\nel.style.color = 'red';    // 스타일 변경\n\n// 클릭 이벤트\nel.addEventListener('click', () => alert('클릭!'));"
+  },
+  {
+    keywords: ["클래스", "class", "객체", "object"],
+    answer: "클래스는 객체를 만드는 틀이에요! (ES6+) 🏭\n\nclass Person {\n  constructor(name, age) {\n    this.name = name;\n    this.age = age;\n  }\n  greet() {\n    return `안녕! 나는 ${this.name}이야`;\n  }\n}\nconst p = new Person('철수', 20);\np.greet(); // → '안녕! 나는 철수이야'"
+  },
+  {
+    keywords: ["이벤트", "event", "클릭", "click"],
+    answer: "이벤트는 사용자 동작에 반응하는 기능이에요! 🖱️\n\n// 방법 1: 속성\n<button onclick='myFunc()'>클릭</button>\n\n// 방법 2: addEventListener (권장)\nbutton.addEventListener('click', () => {\n  alert('버튼 클릭!');\n});\n\nclick, input, submit, keydown 등 다양한 이벤트가 있어요!"
+  },
+  {
+    keywords: ["api", "fetch", "axios", "비동기", "async", "await", "promise"],
+    answer: "비동기 프로그래밍으로 API를 호출할 수 있어요! 🌐\n\nasync function getData() {\n  const res = await fetch('https://api.example.com/data');\n  const data = await res.json();\n  console.log(data);\n}\n\nasync/await는 비동기 코드를 동기처럼 읽기 쉽게 써줘요!"
+  },
+  {
+    keywords: ["시작", "어떻게", "배울", "입문", "처음", "뭐부터"],
+    answer: "코딩 학습 로드맵을 알려드릴게요! 🗺️\n\n1️⃣ HTML - 웹페이지 구조 만들기\n2️⃣ CSS - 디자인/스타일 입히기\n3️⃣ JavaScript - 동적 기능 추가\n4️⃣ React/Vue 등 프레임워크\n5️⃣ Git & GitHub - 버전 관리\n\n왼쪽 강의 목록을 순서대로 따라가보세요! 💪"
+  }
+];
+
+function getBotResponse(userInput) {
+  const input = userInput.toLowerCase().replace(/[^\w\s\uAC00-\uD7A3\u3131-\u318E\uFFA1-\uFFBE]/g, '');
+  for (const entry of knowledgeBase) {
+    if (entry.keywords.some(kw => input.includes(kw))) {
+      return entry.answer;
+    }
+  }
+  return `"${userInput}"에 대한 질문이군요! 🤔\n\n현재 제가 설명할 수 있는 주제:\n• HTML 기초\n• CSS 스타일링\n• JavaScript (변수, 함수, 배열, 반복문, 조건문, DOM, 이벤트, 클래스)\n• 코딩 시작 방법\n\n이 중 궁금한 걸 질문해보세요!`;
+}
+
+// ──────────────────────────────────────────────
+// Chat functionality
+// ──────────────────────────────────────────────
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const chatMessages = document.getElementById('chatMessages');
+
+  // Student message
+  const studentMsg = document.createElement('div');
+  studentMsg.className = 'msg student';
+  studentMsg.innerHTML = '<div class="sender">🙋 학생</div>' + escapeHtml(text);
+  chatMessages.appendChild(studentMsg);
+
+  input.value = '';
+
+  // Teacher response
+  setTimeout(() => {
+    const teacherMsg = document.createElement('div');
+    teacherMsg.className = 'msg teacher';
+    teacherMsg.innerHTML = '<div class="sender">🎓 코딩 선생님</div>' +
+      escapeHtml(getBotResponse(text)).replace(/\n/g, '<br>');
+    chatMessages.appendChild(teacherMsg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 400);
+
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
+}
+
+// ──────────────────────────────────────────────
+// Lesson loading
+// ──────────────────────────────────────────────
+let currentLesson = 0;
+let quizAnswered = [];
+
+function loadLesson(index) {
+  currentLesson = index;
+  const lesson = lessons[index];
+
+  // Update sidebar active state
+  document.querySelectorAll('.lesson-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === index);
+  });
+
+  // Update lesson content
+  document.getElementById('lessonContent').innerHTML = lesson.content;
+
+  // Update code editor
+  document.getElementById('codeInput').value = lesson.code;
+  runCode();
+
+  // Update quiz
+  document.getElementById('quizTitle').innerText = lesson.quizTitle;
+  quizAnswered = new Array(lesson.quizzes.length).fill(false);
+  renderQuiz(lesson.quizzes);
+}
+
+function renderQuiz(quizzes) {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  updateProgress();
+
+  quizzes.forEach((quiz, qi) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-item';
+    div.id = 'quiz-' + qi;
+
+    const qDiv = document.createElement('div');
+    qDiv.className = 'quiz-q';
+    qDiv.innerText = (qi + 1) + '. ' + quiz.q;
+    div.appendChild(qDiv);
+
+    const opts = document.createElement('div');
+    opts.className = 'quiz-options';
+    quiz.options.forEach((opt, oi) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-option';
+      btn.innerText = opt;
+      btn.onclick = () => checkAnswer(qi, oi, quiz.answer, quiz.explanation);
+      opts.appendChild(btn);
+    });
+    div.appendChild(opts);
+
+    const feedback = document.createElement('div');
+    feedback.className = 'quiz-feedback';
+    feedback.id = 'feedback-' + qi;
+    div.appendChild(feedback);
+
+    container.appendChild(div);
+  });
+}
+
+function checkAnswer(qi, selectedIndex, correctIndex, explanation) {
+  if (quizAnswered[qi]) return;
+  quizAnswered[qi] = true;
+
+  const quiz = lessons[currentLesson].quizzes[qi];
+  const quizItem = document.getElementById('quiz-' + qi);
+  const buttons = quizItem.querySelectorAll('.quiz-option');
+  const feedback = document.getElementById('feedback-' + qi);
+
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctIndex) btn.classList.add('show-correct');
+  });
+
+  if (selectedIndex === correctIndex) {
+    buttons[selectedIndex].classList.add('selected-correct');
+    quizItem.classList.add('correct');
+    feedback.className = 'quiz-feedback correct';
+    feedback.innerText = '✅ ' + explanation;
+  } else {
+    buttons[selectedIndex].classList.add('selected-wrong');
+    quizItem.classList.add('wrong');
+    feedback.className = 'quiz-feedback wrong';
+    feedback.innerText = '❌ 틀렸어요! ' + explanation;
+  }
+
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = quizAnswered.filter(Boolean).length;
+  const total = quizAnswered.length;
+  const pct = total > 0 ? (answered / total * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+// ──────────────────────────────────────────────
+// Code editor
+// ──────────────────────────────────────────────
+let _previewBlobUrl = null;
+function runCode() {
+  const code = document.getElementById('codeInput').value;
+  const iframe = document.getElementById('preview');
+  if (_previewBlobUrl) URL.revokeObjectURL(_previewBlobUrl);
+  const blob = new Blob([code], { type: 'text/html' });
+  _previewBlobUrl = URL.createObjectURL(blob);
+  iframe.src = _previewBlobUrl;
+}
+
+function resetCode() {
+  document.getElementById('codeInput').value = lessons[currentLesson].code;
+  runCode();
+}
+
+// Ctrl+Enter to run
+document.getElementById('codeInput').addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runCode();
+  // Tab key indentation
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const start = e.target.selectionStart;
+    const end = e.target.selectionEnd;
+    e.target.value = e.target.value.substring(0, start) + '  ' + e.target.value.substring(end);
+    e.target.selectionStart = e.target.selectionEnd = start + 2;
+  }
+});
+
+// ──────────────────────────────────────────────
+// Init
+// ──────────────────────────────────────────────
+loadLesson(0);
+</script>
+</body>
+</html>
